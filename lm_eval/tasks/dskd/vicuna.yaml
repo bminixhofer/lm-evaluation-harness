@@ -10,8 +10,10 @@ doc_to_text: prompt
 doc_to_target: 0
 generation_kwargs:
   until: []
-  do_sample: false
-  temperature: 0.0
+  do_sample: true
+  temperature: 1.0
+  top_p: 1.0
+  top_k: 0
   max_gen_toks: 512
 process_results: !function utils.process_results
 metric_list:
