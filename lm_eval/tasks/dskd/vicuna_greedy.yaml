@@ -13,7 +13,6 @@ generation_kwargs:
   do_sample: false
   temperature: 0.0
   max_gen_toks: 256
-  no_repeat_ngram_size: 6
 process_results: !function utils.process_results
 metric_list:
   - metric: rougeL
