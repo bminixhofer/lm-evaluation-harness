@@ -7,7 +7,7 @@ output_type: generate_until
 training_split: train
 fewshot_split: train
 test_split: test
-doc_to_text: '<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+doc_to_text: '<|start_header_id|>system<|end_header_id|>
 
 
 <|eot_id|><|start_header_id|>user<|end_header_id|>
@@ -16,7 +16,9 @@ doc_to_text: '<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 Solve the following math problem. Make sure to put the answer (and only answer) inside \boxed{}.
 
 
-{{question}}<|eot_id|>assistant'
+{{question}}<|eot_id|>assistant
+
+'
 doc_to_target: "{{answer}}" #" {{answer.split('### ')[-1].rstrip()}}"
 metric_list:
   - metric: exact_match
