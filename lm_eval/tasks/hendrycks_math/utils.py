@@ -53,17 +53,14 @@ def is_equiv(str1, str2, verbose=False):
 
 
 def remove_boxed(s):
-    if "\\boxed " in s:
-        left = "\\boxed "
-        assert s[: len(left)] == left
-        return s[len(left) :]
-
-    left = "\\boxed{"
-
-    assert s[: len(left)] == left
-    assert s[-1] == "}"
-
-    return s[len(left) : -1]
+    if s.startswith("\\boxed "):
+        return s[len("\\boxed ") :]
+    elif s.startswith("\\boxed{"):
+        return s[len("\\boxed{") :-1]
+    elif s.startswith("\\fbox{"):
+        return s[len("\\fbox{") :-1]
+    else:
+        return None
 
 
 def last_boxed_only_string(string):
