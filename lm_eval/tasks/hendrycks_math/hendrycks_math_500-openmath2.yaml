@@ -5,16 +5,14 @@ dataset_path: HuggingFaceH4/MATH-500
 process_docs: !function utils.process_docs
 output_type: generate_until
 test_split: test
-doc_to_text: '<|start_header_id|>system<|end_header_id|>
-
-
-<|eot_id|><|start_header_id|>user<|end_header_id|>
+doc_to_text: '<|start_header_id|>user<|end_header_id|>
 
 
 Solve the following math problem. Make sure to put the answer (and only answer) inside \boxed{}.
 
 
-{{problem}}<|eot_id|>assistant
+{{problem}}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
 
 '
 process_results: !function utils.process_results
