@@ -22,6 +22,8 @@ generation_kwargs:
     - "Problem:"
     - "</s>"
     - "<|im_end|>"
+    - "<|eot_id|>"
+    - "<end_of_turn>"
   do_sample: false
 metric_list:
   - metric: exact_match

@@ -34,6 +34,8 @@ generation_kwargs:
     - "Q:"
     - "</s>"
     - "<|im_end|>"
+    - "<|eot_id|>"
+    - "<end_of_turn>"
   do_sample: false
 repeats: 1
 num_fewshot: 0
