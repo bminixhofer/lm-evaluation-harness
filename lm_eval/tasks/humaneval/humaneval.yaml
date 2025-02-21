@@ -17,6 +17,16 @@ generation_kwargs:
     - "\n#"
     - "\nif"
     - "\nprint"
+    - "\n\nclass"
+    - "\n\ndef"
+    - "\n\n#"
+    - "\n\nif"
+    - "\n\nprint"
+    - "\n\n\nclass"
+    - "\n\n\ndef"
+    - "\n\n\n#"
+    - "\n\n\nif"
+    - "\n\n\nprint"
   max_gen_toks: 1024
   do_sample: false
 repeats: 1

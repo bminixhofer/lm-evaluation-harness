@@ -23,5 +23,13 @@ def pass_at_k(references: list[str], predictions: list[list[str]], k: list[int] 
     return res[0]
 
 
+def sanitize_response(response: str) -> str:
+    for end_sequence in ["\nclass", "\ndef", "\n#", "\nif", "\nprint"]:
+        if end_sequence in response:
+            response = response[: response.index(end_sequence)]
+
+    return "    " + response.strip()
+
+
 def build_predictions(resps: list[list[str]], docs: list[dict]) -> list[list[str]]:
-    return [[doc["prompt"] + r for r in resp] for resp, doc in zip(resps, docs)]
+    return [[doc["prompt"] + sanitize_response(r) for r in resp] for resp, doc in zip(resps, docs)]
