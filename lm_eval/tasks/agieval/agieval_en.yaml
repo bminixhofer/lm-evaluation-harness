@@ -6,7 +6,7 @@ task:
   - agieval_lsat_ar
   - agieval_lsat_lr
   - agieval_lsat_rc
-  - agieval_math
+#  - agieval_math
   - agieval_sat_en_without_passage
   - agieval_sat_en
   - agieval_sat_math
