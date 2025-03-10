@@ -1,0 +1,35 @@
+tag:
+  - math_word_problems
+task: math_openmath2
+dataset_path: JeremiahZ/hendrycks_math_merged
+process_docs: !function utils.process_docs
+output_type: generate_until
+test_split: test
+doc_to_text: '<|start_header_id|>user<|end_header_id|>
+
+
+Solve the following math problem. Make sure to put the answer (and only answer) inside \boxed{}.
+
+
+{{problem}}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+
+'
+process_results: !function utils.process_results
+doc_to_target: "{{solution}}"
+generation_kwargs:
+  until:
+    - "Problem:"
+    - "</s>"
+    - "<|im_end|>"
+    - "<|eot_id|>"
+    - "<end_of_turn>"
+  do_sample: false
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+metadata:
+  version: 1.0
+dataset_kwargs:
+  trust_remote_code: true
