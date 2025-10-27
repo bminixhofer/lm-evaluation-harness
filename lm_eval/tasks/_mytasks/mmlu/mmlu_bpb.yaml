@@ -1,0 +1,20 @@
+name: mmlu.bpb
+group:
+  - mmlu
+task: mmlu_bpb
+dataset_path: <the same dataset path used by built-in mmlu>
+dataset_name: default
+version: 1.0
+
+# --- prompt/answer mapping (adapt to the built-in mappings) ---
+doc_to_text: "{{ question_text }}\nChoices:\n{{ choices.text }}\nAnswer:"
+doc_to_target: "{{ answer }}"   # ensure the target is the full answer string
+
+# Use a loglikelihood-style output so the harness calculates logprobs
+# output_type: loglikelihood_rolling
+output_type: loglikelihood
+
+metric_list:
+  - metric: bits_per_byte
+    aggregation: bits_per_byte
+    higher_is_better: false

@@ -1,0 +1,27 @@
+task: medmcqa.bpb
+dataset_path: medmcqa
+training_split: train
+validation_split: validation
+test_split: validation
+doc_to_text: !function utils_medmcqa.doc_to_text
+should_decontaminate: true
+doc_to_decontamination_query: "{{question}}"
+
+doc_to_target: "{{ ['A','B','C','D'][cop] }}. {{ [opa,opb,opc,opd][cop] }}" # {{ letter }}. {{ gold_answer }}
+output_type: loglikelihood
+metric_list:
+  - metric: bits_per_byte
+    aggregation: bits_per_byte
+    higher_is_better: false
+  - metric: byte_perplexity
+    aggregation: weighted_perplexity
+    higher_is_better: false
+  - metric: token_perplexity
+    aggregation: weighted_perplexity
+    higher_is_better: false
+  # - metric: acc
+  #   aggregation: mean
+  #   higher_is_better: true
+  # - metric: acc_norm
+  #   aggregation: mean
+  #   higher_is_better: true

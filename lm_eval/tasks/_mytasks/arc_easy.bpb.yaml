@@ -1,0 +1,37 @@
+# Based on tasks/arc/arc_easy.yaml
+
+task: arc_easy.bpb
+dataset_path: benjamin/ai2_arc_full_sentence
+dataset_name: ARC-Easy
+training_split: train
+validation_split: validation
+test_split: test
+fewshot_split: train
+num_fewshot: 0
+# doc_to_text: "Question: {{question}}\nAnswer:"
+# doc_to_target: " {{choices.text[choices.label.index(answerKey)]}}"
+should_decontaminate: true
+doc_to_decontamination_query: "{{question}}"
+
+doc_to_text: "Question: {{ question.strip() }}\n{% for text in choices['text'] %}{{ choices['label'][loop.index0] }}. {{ text }}\n{% endfor %}Answer: "
+doc_to_target: "{{ answerKey.upper() }}. {{ choices['text'][choices.label.index(answerKey)] }}" # {{ letter }}. {{ gold_answer }}
+output_type: loglikelihood
+metric_list:
+    - metric: bits_per_byte
+      aggregation: bits_per_byte
+      higher_is_better: false
+    - metric: byte_perplexity
+      aggregation: weighted_perplexity
+      higher_is_better: false
+    - metric: token_perplexity
+      aggregation: weighted_perplexity
+      higher_is_better: false
+    # - metric: acc
+    #   aggregation: mean
+    #   higher_is_better: true
+    # - metric: acc_norm
+    #   aggregation: mean
+    #   higher_is_better: true
+
+metadata:
+    version: 1.0

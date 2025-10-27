@@ -1,0 +1,41 @@
+# Based on tasks/mbpp/mbpp.yaml
+
+task: mbpp.bpb
+dataset_path: google-research-datasets/mbpp
+dataset_name: full
+unsafe_code: true
+test_split: test
+doc_to_text: "You are an expert Python programmer, and here is your task: {{text}} Your code should pass these tests:\n\n{{test_list[0]}}\n{{test_list[1]}}\n{{test_list[2]}}\n[BEGIN]\n"
+doc_to_target: "{% if is_fewshot is defined %}{{code}}\n[DONE]{% else %}{{test_list[0]}}\n{{test_list[1]}}\n{{test_list[2]}}{% endif %}"
+target_delimiter: ""
+
+# —— Default evaluation settings: ——————————
+# output_type: generate_until
+# metric_list:
+#   - metric: !function utils.pass_at_1
+#     aggregation: mean
+#     higher_is_better: true
+
+# —— Bits per byte evaluation settings: ——————————
+output_type: loglikelihood
+metric_list:
+  - metric: bits_per_byte
+    aggregation: bits_per_byte
+    higher_is_better: false
+  - metric: byte_perplexity
+    aggregation: weighted_perplexity
+    higher_is_better: false
+  - metric: token_perplexity
+    aggregation: weighted_perplexity
+    higher_is_better: false
+
+generation_kwargs:
+  until:
+    - "[DONE]"
+  do_sample: false
+num_fewshot: 3
+fewshot_config:
+  sampler: first_n
+  samples: !function utils.list_fewshot_samples
+metadata:
+  version: 1.0

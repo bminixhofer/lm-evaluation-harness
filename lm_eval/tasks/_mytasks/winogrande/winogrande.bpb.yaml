@@ -1,0 +1,37 @@
+# Based on tasks/winogrande/default.yaml
+
+task: winogrande.bpb
+dataset_path: winogrande
+dataset_name: winogrande_xl
+training_split: train
+validation_split: validation
+doc_to_text: !function preprocess_winogrande_bpb.doc_to_text
+doc_to_target: !function preprocess_winogrande_bpb.doc_to_target
+should_decontaminate: true
+doc_to_decontamination_query: sentence
+
+# doc_to_text: Ian volunteered to eat Dennis's menudo after already having a bowl because
+# doc_to_target: {correct_ans} despised eating intestine.
+
+output_type: loglikelihood
+metric_list:
+  - metric: bits_per_byte
+    aggregation: bits_per_byte
+    higher_is_better: false
+  - metric: byte_perplexity
+    aggregation: weighted_perplexity
+    higher_is_better: false
+  - metric: token_perplexity
+    aggregation: weighted_perplexity
+    higher_is_better: false
+  # - metric: acc
+  #   aggregation: mean
+  #   higher_is_better: true
+  # - metric: acc_norm
+  #   aggregation: mean
+  #   higher_is_better: true
+
+metadata:
+  version: 1.0
+dataset_kwargs:
+  trust_remote_code: true

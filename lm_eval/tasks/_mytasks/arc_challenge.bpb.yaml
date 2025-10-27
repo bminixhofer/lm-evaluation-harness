@@ -1,0 +1,3 @@
+include: arc_easy.bpb.yaml
+task: arc_challenge.bpb
+dataset_name: ARC-Challenge

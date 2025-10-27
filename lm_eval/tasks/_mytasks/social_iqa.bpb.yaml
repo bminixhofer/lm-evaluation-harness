@@ -1,0 +1,31 @@
+# Based on tasks/siqa/siqa.yaml
+
+task: social_iqa.bpb
+dataset_path: social_i_qa
+dataset_name: null
+training_split: train
+validation_split: validation
+target_delimiter: " "
+
+doc_to_text: "Q: {{context}} {{question}}\nA. {{answerA}}\nB. {{answerB}}\nC. {{answerC}}\nA: "
+doc_to_target: "{{ ['A. '+answerA,'B. '+answerB,'C. '+answerC][(label|int) - 1] }}"  # <letter>. <gold_answer>
+output_type: loglikelihood
+metric_list:
+  - metric: bits_per_byte
+    aggregation: bits_per_byte
+    higher_is_better: false
+  - metric: byte_perplexity
+    aggregation: weighted_perplexity
+    higher_is_better: false
+  - metric: token_perplexity
+    aggregation: weighted_perplexity
+    higher_is_better: false
+  # - metric: acc
+  #   aggregation: mean
+  #   higher_is_better: true
+  # - metric: acc_norm
+  #   aggregation: mean
+  #   higher_is_better: true
+
+metadata:
+  version: 0.0
