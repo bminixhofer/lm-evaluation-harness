@@ -35,12 +35,31 @@ def median(arr):
 # We use them as aggregation metrics, paired with no-op passthrough metric fns.
 @register_aggregation("perplexity")
 def perplexity(items):
-    return math.exp(-mean(items))
+    neg_mean = -mean(items)
+    # Clamp to prevent overflow in exp()
+    if neg_mean > 700:
+        eval_logger.warning(
+            f"Mean log-likelihood is very negative ({-neg_mean:.2f}), "
+            f"clamping perplexity calculation to prevent overflow. "
+            f"This usually indicates the model performs very poorly on this task."
+        )
+        return float('inf')
+    return math.exp(neg_mean)
 
 
 @register_aggregation("weighted_perplexity")
 def weighted_perplexity(items):
-    return math.exp(-weighted_mean(items))
+    neg_mean = -weighted_mean(items)
+    # Clamp to prevent overflow in exp()
+    # exp(700) is near float max, so we clamp to 700
+    if neg_mean > 700:
+        eval_logger.warning(
+            f"Weighted mean log-likelihood is very negative ({-neg_mean:.2f}), "
+            f"clamping perplexity calculation to prevent overflow. "
+            f"This usually indicates the model performs very poorly on this task."
+        )
+        return float('inf')
+    return math.exp(neg_mean)
 
 
 @register_aggregation("bits_per_byte")
