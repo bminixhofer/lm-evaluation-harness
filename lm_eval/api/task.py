@@ -1449,13 +1449,51 @@ class ConfigurableTask(Task):
         use_metric = list(self._metric_fn_list.keys())
         if self.OUTPUT_TYPE == "loglikelihood":
             results = results[0]
-            ll, is_greedy = results
+            # Handle both old format (ll, is_greedy) and new format (ll, is_greedy, token_count)
+            if len(results) == 3:
+                ll, is_greedy, _tokens = results
+            else:
+                ll, is_greedy = results
+                # Raise error if token_perplexity is requested but model doesn't provide token count
+                if "token_perplexity" in use_metric:
+                    raise ValueError(
+                        "token_perplexity metric requires the model to return token counts. "
+                        "Your model's loglikelihood method must return a 3-tuple: "
+                        "(log_likelihood, is_greedy, token_count). "
+                        "Currently it only returns (log_likelihood, is_greedy)."
+                    )
+
+            # Compute word and byte counts for perplexity metrics
+            target_text = self.doc_to_target(doc)
+            _words = self.count_words(target_text)
+            _bytes = self.count_bytes(target_text)
+
             return {
                 **({"perplexity": ll} if "perplexity" in use_metric else {}),
                 **({"acc": int(is_greedy)} if "acc" in use_metric else {}),
+                **(
+                    {"word_perplexity": (ll, _words)}
+                    if "word_perplexity" in use_metric
+                    else {}
+                ),
+                **(
+                    {"byte_perplexity": (ll, _bytes)}
+                    if "byte_perplexity" in use_metric
+                    else {}
+                ),
+                **(
+                    {"bits_per_byte": (ll, _bytes)}
+                    if "bits_per_byte" in use_metric
+                    else {}
+                ),
+                **(
+                    {"token_perplexity": (ll, _tokens)}
+                    if "token_perplexity" in use_metric
+                    else {}
+                ),
             }
         elif self.OUTPUT_TYPE == "loglikelihood_rolling":
-            (loglikelihood,) = results
+            (loglikelihood, _tokens) = results[0]
             _words = self.count_words(self.doc_to_target(doc))
             _bytes = self.count_bytes(self.doc_to_target(doc))
             return {
@@ -1474,9 +1512,17 @@ class ConfigurableTask(Task):
                     if "bits_per_byte" in use_metric
                     else {}
                 ),
+                **(
+                    {"token_perplexity": (loglikelihood, _tokens)}
+                    if "token_perplexity" in use_metric
+                    else {}
+                ),
             }
         elif self.OUTPUT_TYPE == "multiple_choice":
-            lls, is_greedy = zip(*results)
+            if len(results[0]) == 3:
+                lls, is_greedy, _tokens = zip(*results)
+            else:
+                lls, is_greedy = zip(*results)
 
             # retrieve choices in List[str] form, to compute choice lengths, etc.
             choices = self.doc_to_choice(doc)
@@ -1733,6 +1779,7 @@ class PerplexityTask(Task):
             "word_perplexity": False,
             "byte_perplexity": False,
             "bits_per_byte": False,
+            "token_perplexity": False,
         }
 
     def doc_to_decontamination_query(self, doc):
@@ -1757,13 +1804,14 @@ class PerplexityTask(Task):
         )
 
     def process_results(self, doc: dict, results: Tuple[float]) -> dict:
-        (loglikelihood,) = results
+        (loglikelihood, tokens_) = results[0]
         words = self.count_words(self.doc_to_target(doc))
         bytes_ = self.count_bytes(self.doc_to_target(doc))
         return {
             "word_perplexity": (loglikelihood, words),
             "byte_perplexity": (loglikelihood, bytes_),
             "bits_per_byte": (loglikelihood, bytes_),
+            "token_perplexity": (loglikelihood, tokens_),
         }
 
     def aggregation(self) -> dict:
@@ -1771,6 +1819,7 @@ class PerplexityTask(Task):
             "word_perplexity": weighted_perplexity,
             "byte_perplexity": weighted_perplexity,
             "bits_per_byte": bits_per_byte,
+            "token_perplexity": weighted_perplexity,
         }
 
     @classmethod
