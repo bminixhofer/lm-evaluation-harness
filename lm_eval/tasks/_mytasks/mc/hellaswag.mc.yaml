@@ -1,0 +1,22 @@
+tag:
+    - hellaswag
+task: hellaswag.mc
+dataset_path: Rowan/hellaswag
+dataset_name: null
+output_type: multiple_choice
+training_split: train
+validation_split: validation
+test_split: null
+process_docs: !function hs_utils.process_docs
+doc_to_text: "{{ activity_label }}: {{ ctx }}\n{% for ending in endings %}{{ ['A', 'B', 'C', 'D'][loop.index0] }}. {{ ending }}\n{% endfor %}Answer:"
+doc_to_target: "{{ label | int }}"
+doc_to_choice: "{%set options=[]%}{%for ending in endings%}{{options.append(['A', 'B', 'C', 'D'][loop.index0] ~ '. ' ~ ending) or ''}}{% endfor %}{{options}}"
+metric_list:
+    - metric: acc
+      aggregation: mean
+      higher_is_better: true
+    - metric: acc_norm
+      aggregation: mean
+      higher_is_better: true
+metadata:
+    version: 1.0
